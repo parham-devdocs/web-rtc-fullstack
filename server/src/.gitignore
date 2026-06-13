@@ -1,0 +1,45 @@
+# Ignore all node_modules folders anywhere in the project
+**/node_modules/
+node_modules/
+
+# Or specifically for your structure:
+frontend/node_modules/
+server/node_modules/
+
+# Dependencies
+
+frontend/.pnp/
+frontend/.pnp.js
+frontend/.yarn/
+
+# Next.js build output
+frontend/.next/
+frontend/out/
+frontend/build/
+
+# Environment files
+frontend/.env
+frontend/.env*.local
+frontend/.env*.production
+
+# Debug logs
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# OS files
+frontend/.DS_Store
+frontend/*.pem
+
+# TypeScript
+frontend/*.tsbuildinfo
+frontend/next-env.d.ts
+
+# Vercel
+frontend/.vercel
+
+# IDE
+frontend/.vscode/
+frontend/.idea/
+frontend/*.swp
+frontend/*.swo
