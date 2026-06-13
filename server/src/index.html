@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Socket.IO Chat</title>
+</head>
+<body>
+  <h1>Socket.IO Chat</h1>
+  <div>Status: <span id="status">disconnected</span></div>
+  <input type="text" id="messageInput" placeholder="Type message..." />
+  <button id="sendButton">Send</button>
+  <div id="chatbox"></div>
+
+  <!-- Socket.IO client -->
+  <script src="/socket.io/socket.io.js"></script>
+
+  <script>
+    const statusEl = document.getElementById("status");
+    const messageInput = document.getElementById("messageInput");
+    const sendButton = document.getElementById("sendButton");
+    const chatbox = document.getElementById("chatbox");
+
+    // Establish connection to the server
+    const socket = io(); // Connects to the same origin by default
+
+    // --- Connection Events ---
+    socket.on("connect", () => {
+      statusEl.textContent = "connected";
+      console.log("Client connected with ID:", socket.id);
+      // You can emit events here after the connection is established
+      // For example, to join a room:
+      // socket.emit('joinRoom', 'yourRoomName');
+    });
+
+    socket.on("connect_error", (err) => {
+      statusEl.textContent = "connect_error";
+      console.error("Connection error:", err);
+    });
+
+    socket.on("disconnect", (reason) => {
+      statusEl.textContent = "disconnected";
+      console.warn("Client disconnected:", reason);
+    });
+
+    // --- Receiving Messages from Server ---
+
+    // Listener for system messages or chat messages from other users
+    socket.on("message", (data) => {
+      const messageElement = document.createElement('p');
+      if (data.system) {
+        messageElement.style.fontStyle = 'italic';
+        messageElement.style.color = 'gray';
+        messageElement.textContent = data.text;
+      } else {
+        messageElement.textContent = `${data.user || 'Anonymous'}: ${data.text} (${new Date(data.time).toLocaleTimeString()})`;
+      }
+      chatbox.appendChild(messageElement);
+      chatbox.scrollTop = chatbox.scrollHeight; // Auto-scroll to bottom
+    });
+
+    // If your server emitted a 'joinRoom' confirmation or any other specific event, listen for it here.
+    // Based on your server code, it emits 'message' when a user joins, not a direct 'joinRoom' confirmation.
+    // If you intended to send data with 'joinRoom' from server to client, you'd add:
+    // socket.on("joinRoomConfirmation", (data) => { console.log("Room join confirmed:", data); });
+
+
+    // --- Sending Messages to Server ---
+
+    sendButton.addEventListener("click", () => {
+      const messageText = messageInput.value.trim();
+      if (messageText) {
+        // Assuming you have a room and user context available
+        // For this example, let's assume a default room and user
+        const room = 'general'; // Replace with actual room if applicable
+        const user = 'User' + Math.random().toString(16).slice(2, 8); // Simple anonymous user
+
+        socket.emit('chatMessage', { user: user, room: room, text: messageText });
+        messageInput.value = ''; // Clear input after sending
+      }
+    });
+
+    messageInput.addEventListener("keypress", (e) => {
+      if (e.key === 'Enter') {
+        sendButton.click();
+      }
+    });
+
+    // Example: Emit 'joinRoom' on connection (or based on user interaction)
+    socket.on("connect", () => {
+     
+      socket.on('smt', (data)=>{console.log(data)});
+    });
+
+  </script>
+</body>
+</html>
